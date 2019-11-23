@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--  对应接口的全路径 -->
+<mapper namespace="com.yc.dao.ICartInfoMapper">
+	<insert id="add" parameterType="CartInfo">
+		insert into cartInfo values(null, #{mno}, #{gno}, #{num})
+	</insert>
+	
+	
+	<select id="findByMno" parameterType="int" resultType="CartInfo">
+		select cno,mno,cf.gno,pics,gname,price,unit,weight,num from cartInfo cf,goodsInfo gf  
+		where cf.gno=gf.gno and cf.mno=#{_parameter}    
+	</select>
+
+	<select id="findByCnos" resultType="CartInfo">
+		select cno,mno,cf.gno,pics,gname,price,unit,weight,num from cartInfo cf,goodsInfo gf  
+		where cf.gno=gf.gno and cno in
+		<foreach collection="array" open="(" separator="," close=")" item="item">
+			#{item}
+		</foreach>
+	</select>
+	
+	<!-- 根据会员编号查看当前会员的购物车信息 -->
+	<select id="finds" parameterType="int" resultType="CartInfo">
+		select cno,mno,gno,num from cartInfo where mno=#{_parameter}    
+	</select>
+	
+	<delete id="deleteByCno" parameterType="int" >
+		delete from cartInfo where cno=#{_parameter}    
+	</delete>
+	
+	<delete id="delete" parameterType="int" >
+		delete from cartInfo where cno in
+		 <foreach collection="array" separator="," open="(" close=")" item="item">
+			#{item}
+		</foreach>  
+	</delete>
+	
+	<!-- 根据购物车 修改购物车中商品数量 -->
+	<update id="update" parameterType="CartInfo" >
+		update cartInfo set num=num+ #{num} where cno=#{cno}    
+	</update>
+	
+</mapper>

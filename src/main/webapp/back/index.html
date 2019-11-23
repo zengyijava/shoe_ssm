@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>名牌鞋网站-后台登陆</title>
+<link rel="stylesheet" href="css/login.css">
+<link rel="short icon" href="../images/logo.png" type="image/x-icon">
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript">
+function checkLogin() {
+	var account = $.trim($("#account").val());
+	var pwd = $.trim($("#pwd").val());
+	
+	if (account == "") {
+		alert("请输入账号...");
+		return;
+	}
+	
+	if (pwd == "") {
+		alert("请输入密码...");
+		return;
+	}
+	//发送ajax请求  
+	$.post("login",{aname:account,pwd:pwd},function(data){
+		data =parseInt($.trim(data));
+		if(data==0){
+			location.href='manager';
+		}else{
+			alert('账号或密码错误，请确认后重新输入....');
+		}
+	});
+}
+</script>
+</head>
+<body>
+	<div id="login_top">
+		<div id="welcome">
+			欢迎使用名牌鞋网站后台管理系统<a href="page/index.html">返回首页</a>
+		</div>
+		<div id="back">
+			<a href="../index.html">返回首页</a>&nbsp;&nbsp; | &nbsp;&nbsp;
+			<a href="#">帮助</a>
+		</div>
+	</div>
+	<div id="login_center">
+		<div id="login_area">
+			<div id="login_form">
+				<form method="post" id="myform">
+					<div id="login_tip">
+						用户登录&nbsp;&nbsp;UserLogin
+					</div>
+					<div><input type="text" class="username" id="account" placeholder="请输入账号..."></div>
+					<div><input type="password" class="pwd" id="pwd" placeholder="请输入密码..."></div>
+					<div id="btn_area">
+						<input type="button"  onclick="checkLogin()" id="sub_btn" value="登&nbsp;&nbsp;录">&nbsp;&nbsp;
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div id="login_bottom">
+		<label style="color:#FFF"><a class="copy" href="#">计算机科学与技术学院</a>&copy; 版权所有</label>
+	</div>
+</body>
+</html>

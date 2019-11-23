@@ -1,0 +1,242 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>名牌鞋网站-首页</title>
+	<link rel="stylesheet" type="text/css" href="css/reset.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<script type="text/javascript" src="js/jquery-1.12.4.min.js"></script>
+	<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="js/slide.js"></script>
+	
+<script type="text/javascript">
+$(function(){
+	$.post('../goods/finds',null,function(data){ //查询每种类型的商品的前四条数据
+		//alert(data);
+		var str='';
+		//循环类型
+		$.each(data.types,function(index,item){
+			var gnameStr='';
+			var goodsStr='';
+			var tno=item.tno; //类型编号
+			//循环商品信息
+			$.each(data.goods,function(index,item){
+				if(item.tno==tno){
+					gnameStr+='<a href="#">'+item.gname+'</a>';
+					goodsStr+='<li><h4><a href="detail.html#gno='+item.gno+'">'+item.gname+'</a></h4>'
+						+'<a href="detail.html#gno='+item.gno+'"><img src="../../'+item.pics.split(';')[0]+'"></a>'
+						+'<div class="prize">&yen '+item.price+'</div></li>';
+			}
+		});
+		str+='<div class="list_title clearfix"><h3 class="fl" id="model01">'+item.tname+'</h3>'
+			+'<div class="subtitle fl"><span>|</span>'+gnameStr+'</div>'
+			+'<a href="list.html#'+item.tno+'&'+item.tname+'" class="goods_more fr" id="fruit_more">查看更多 ></a></div>'
+			+'<div class="goods_con clearfix"><div class="goods_banner fl"><img src="../../'+item.pic+'"></div>'
+			+'<ul class=goods_list fl>'+goodsStr+'</ul></div>';
+		});
+		$('#goods_info').html('').append(str);
+	});
+	
+});
+
+
+
+
+
+
+</script>	
+
+</head>
+<body>
+	<div class="header_con">
+		<div class="header">
+			<div class="welcome fl">欢迎来到名牌鞋网站!</div>
+			<div class="fr">
+				<div class="login_info fl">
+					欢迎您：<em>张 山</em>
+				</div>
+				<div class="login_btn fl">
+					<a href="login.html">登录</a>
+					<span>|</span>
+					<a href="register.html">注册</a>
+				</div>
+				<div class="user_link fl">
+					<span>|</span>
+					<a href="user_center_info.html">用户中心</a>
+					<span>|</span>
+					<a href="cart.html">我的购物车</a>
+					<span>|</span>
+					<a href="user_center_order.html">我的订单</a>
+				</div>
+			</div>
+		</div>		
+	</div>
+
+	<div class="search_bar clearfix">
+		<a href="index.html" class="logo fl"><img src=""></a>
+		<div class="search_con fl">
+			<input type="text" class="input_text fl" id="search" onfocus="Search()" onkeyup="Search()" onblur="Search()" placeholder="搜索商品">
+			<input type="button" class="input_btn fr" name="" value="搜索">
+			<span id="content">
+			
+			</span>
+		</div>
+		<div class="guest_cart fr">
+			<a href="cart.html" class="cart_name fl">我的购物车</a>
+			<div class="goods_count fl" id="show_count">1</div>
+		</div>
+	</div>
+
+	<div class="navbar_con">
+		<div class="navbar">
+			<h1 class="fl">全部商品分类</h1>
+			<ul class="navlist fl">
+				<li><a href="index.html">首页</a></li>
+				<li class="interval">|</li>
+				<li><a href="list.html">名牌鞋网站</a></li>
+				<li class="interval">|</li>
+				<li><a href="">抽奖</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="center_con clearfix">
+		<ul class="subnav fl">
+			<li><a href="#model01" class="">耐克Nike </a></li>
+			<li><a href="#model02" class="">阿迪达斯Adidas </a></li>
+			<li><a href="#model03" class="">李宁Lining </a></li>
+			<li><a href="#model04" class="">安踏Anta </a></li>
+			<li><a href="#model05" class="">彪马Puma</a></li>
+			<li><a href="#model06" class=""> 匡威Converse </a></li>
+		</ul>
+		<div class="slide fl">
+			<ul class="slide_pics">
+				<li><img src="images/nike.jpg" alt="幻灯片"></li>
+				<li><img src="images/lining.jpg" alt="幻灯片"></li>
+				<li><img src="images/anta.jpg" alt="幻灯片"></li>
+				<li><img src="images/puma.jpg" alt="幻灯片"></li>
+			</ul>
+			<div class="prev"></div>
+			<div class="next"></div>
+			<ul class="points"></ul>
+		</div>
+		<div class="adv fl">
+			<a href="#"><img src="images/adv01.jpg"></a>
+			<a href="#"><img src="images/adv02.jpg"></a>
+		</div>
+	</div>
+	
+<!-- 展示商品----------------- -->
+	<div class="list_model" id="goods_info">
+		<div class="list_title clearfix">
+			<h3 class="fl" id="model01">新品鞋子</h3>
+			<div class="subtitle fl">
+				<span>|</span>
+				<a href="#">aj</a>
+				<a href="#">阿迪</a>
+				<a href="#">李宁</a>
+			</div>
+			<a href="#" class="goods_more fr" id="fruit_more">查看更多 ></a>
+		</div>
+
+		<div class="goods_con clearfix">
+			<div class="goods_banner fl"><img src="images/banner01.jpg"></div>
+			<ul class="goods_list fl" id="first">
+				<li>
+					<h4><a href="#">草莓</a></h4>
+					<a href="#"><img src="images/goods/goods003.jpg"></a>
+					<div class="prize">¥ 30.00</div>
+				</li>
+		<!--  
+				<li>
+					<h4><a href="#">葡萄</a></h4>
+					<a href="#"><img src="images/goods/goods002.jpg"></a>
+					<div class="prize">¥ 5.50</div>
+				</li>
+				<li>
+					<h4><a href="#">柠檬</a></h4>
+					<a href="#"><img src="images/goods/goods001.jpg"></a>
+					<div class="prize">¥ 3.90</div>
+				</li>
+				<li>
+					<h4><a href="#">奇异果</a></h4>
+					<a href="#"><img src="images/goods/goods012.jpg"></a>
+					<div class="prize">¥ 25.80</div>
+				</li>
+	-->			
+			</ul>
+		</div>
+	</div>
+	
+
+<!--  
+	<div class="footer"  style="float:left;position:absolute; ">
+		<div class="foot_link">
+			<a href="#">关于我们</a>
+			<span>|</span>
+			<a href="#">联系我们</a>
+			<span>|</span>
+			<a href="#">招聘人才</a>
+			<span>|</span>
+			<a href="#">友情链接</a>		
+		</div>
+		<p>CopyRight © 2019 计算机科学与技术学院 All Rights Reserved</p>
+		<p>电话：010-****888    京ICP备*******8号</p>
+	</div>
+-->
+	
+    <marquee style=" HEIGHT: 200px; background-color: white" scrollamount="4" direction="up" Align="Middle" >
+    <div style="text-align: center">
+        <p><font color="#FF0000">1一耐克Nike ～</font></p>
+        <p><font color="#FF0000">2一阿迪达斯Adidas～</font></p>
+        <p><font color="#FF0000">3一李宁Lining～</font></p>
+        <p><font color="#FF0000">4一安踏Anta～</font></p>
+        <p><font color="#FF0000">5一彪马Puma～</font></p>
+        <p><font color="#FF0000">6一匡威Converse～</font></p>
+    </div>
+</marquee >
+
+
+<!--  
+<script type="text/javascript">
+$(function(){
+	$.post('../goods/GoodsFinds',null,function(data){
+		console.log(data);
+		showFinds(data);
+	},'json');
+	
+});
+
+function showFinds(arr){
+	var str='';
+	for(var i=0;i<arr.length;i++){
+		str+='<li><h4><a href="list.html">'+arr[i].gname+'</a></h4>'
+			+'<a href="detail.html#gno='+arr[i].gno+'"><img src="../../'+arr[i].pics+'"></a>'
+			+'<div class="price">￥'+arr[i].price+'</div></li>';
+	}
+	$('#first').html(str);
+}
+
+
+	
+function Search(){
+	var tname=$('#search').val();
+	$.post('../type/findByLike',{tname:tname},function(data){
+		console.log(data);
+		showSearch(data);
+	},'json');
+}
+
+function showSearch(arr){
+	var s='';
+	for(var i=0;i<arr.length;i++){
+		s+='<a href="#"><h2>'+arr[i].tname+'</h2></a></br>';
+	}
+	$('#content').html(s);
+}
+
+</script>
+-->
+
+</body>
+</html>

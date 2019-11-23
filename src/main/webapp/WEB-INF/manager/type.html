@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../css/common.css">
+<link rel="stylesheet" href="../css/main.css">
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript">
+$(function(){
+	var objstatus=['下架','正常'];
+	$.get('../../type/findAll',null,function(data){
+		console.log(data);
+		var str='';
+		$.each(data,function(index,item){
+			str+='<tr><td><img src="../../'+item.pic+'" width="50" height="75"/></td><td>'+item.tno+'</td><td>'+item.tname+'</td><td>'+objstatus[item.status]+'</td></tr>';
+		});
+		$('#goodstype_info').html('').append(str);
+	});
+	
+	
+});
+</script>
+</head>
+<body>
+<div id="table" class="mt10">
+	<div class="box span10 oh">
+		<table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table">
+			<thead>
+				<tr>
+                   	<th width="25%">类型图片</th>
+					<th width="30%">类型编号</th>
+                   	<th width="30%">类型名称</th>
+                   	<th>类型状态</th>
+                </tr>
+             </thead>
+             <tbody id="goodstype_info" align="center">
+				
+             </tbody>
+		</table>
+	</div>
+</div>
+</body>
+</html>

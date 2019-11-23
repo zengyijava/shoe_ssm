@@ -1,0 +1,424 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>名牌鞋网站-商品列表</title>
+	<link rel="stylesheet" type="text/css" href="css/reset.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<script type="text/javascript" src="js/jquery-1.12.4.min.js"></script>
+	
+<script type="text/javascript">
+var page=1;
+var rows=5;
+var tno=0;
+var cartInfos=null;
+$(function(){
+	var hashs=decodeURI(location.hash);
+	//alert(hashs);  #1&新鲜水果
+	hashs=hashs.replace('#','').split('&');
+	//locahost:8080/fresh_ssm/front/list.html#1&新鲜水果
+	tno=hashs[0];
+	//alert(hashs);  1，新鲜水果
+	//tno=1;
+	$('#type_name').text(hashs[1]);
+	//alert(hashs[1]);
+	findByTno(page);
+	//统计数量
+	$.get('../goods/pageTotal',{tno:tno},function(data){
+		//console.log(data);
+		pageInfo(data);
+	});
+	
+	getCartInfo();   //购物车
+});
+
+//购物车
+function getCartInfo(){
+	$.get('../cart/finds',null,function(data){
+		cartInfos=data;
+		$('#show_count').text(cartInfos.length);
+	},'json');
+
+}
+
+function pageInfo(total){
+	var totalPage=Math.ceil(total/rows);
+	var str='<a href="#">上一页</a></li><a href="javascript:findByTno(1)" class="active">1</a>';
+	for(var i=2;i<=totalPage;i++){
+		str+='<a href="javascript:findByTno('+i+')" class="active">'+i+'</a>';
+	}
+	str+='<a href="#">下一页</a></li>';
+	$('#pagenation_info').html('').append(str);
+}
+
+
+function findByTno(pageNo){
+	page=pageNo;
+	$.post('../goods/findByPage',{tno:tno,page:page,rows:rows},function(data){
+	//显示商品信息
+	goodsInfo(data);
+	//显示分页信息
+	$('#pagenation_info a').removeClass('active');
+	$('#pagenation_info li:eq('+(pageNo-1)+') a').addClass('active');
+	
+});
+
+}
+
+function goodsInfo(data){
+	var str='';
+	$.each(data,function(index,item){
+		str+='<li><a href="detail.html"><img src="../../'+item.pics.split(';')[0]+'"></a>'
+			+'<h4><a href="detail.html#'+item.gno+'">'+item.gname+'</a></h4>'
+			+'<div class="operate"><span class="prize">&yen;'+item.price+'</span>'
+			+'<span class="unit">'+item.price+'/'+item.weight+'</span>'
+			+'<a href="javascript:addCart('+item.gno+')" class="add_goods" title="加入购物车"></a></div></li>';                
+	});
+	$('#goods_type_list').html('').append(str);
+}
+
+//添加购物车
+function addCart(gno){
+	//获取用户的所有购物车信息
+	if(null!=cartInfos){
+		for(var i=0;i<cartInfos.length;i++){
+			if(cartInfos[i].gno==gno){
+				//说明购物车中有该数据
+				//修改操作
+				cartInfos[i].num=cartInfos[i].num+1;
+				$.post('../cart/update',{cno:cartInfos[i].cno,num:1},function(data){
+					data=parseInt(data);
+					if(data>0){
+						alert('购物车添加成功！！！');
+					}else{
+						alert("购物车添加失败！！！");
+					}
+				});
+				
+				return ;
+			}
+		}
+	}
+	
+	
+	$.post('../cart/add',{gno:gno},function(data){
+		data=parseInt(data);
+		//判断用户是否登录
+		if(data==-1){
+			alert("请登录！！！");
+			localStorage.setItem('targetUrl',location.href);
+			location.href='login.html';
+		}else if(data>0){
+			alert('购物车添加成功！！！');
+		}else{
+			alert("购物车添加失败！！！");
+		}
+	},'text');
+}
+
+</script>
+</head>
+<body>
+	<div class="header_con">
+		<div class="header">
+			<div class="welcome fl">欢迎来到名牌鞋网站商城!</div>
+			<div class="fr">
+				<div class="login_info fl">
+					欢迎您：<em>张 山</em>
+				</div>
+				<div class="login_btn fl">
+					<a href="login.html">登录</a>
+					<span>|</span>
+					<a href="register.html">注册</a>
+				</div>
+				<div class="user_link fl">
+					<span>|</span>
+					<a href="user_center_info.html">用户中心</a>
+					<span>|</span>
+					<a href="cart.html">我的购物车</a>
+					<span>|</span>
+					<a href="user_center_order.html">我的订单</a>
+				</div>
+			</div>
+		</div>		
+	</div>
+
+	<div class="search_bar clearfix">
+		<a href="index.html" class="logo fl"><img src=""></a>
+		<div class="search_con fl">
+			<input type="text" class="input_text fl" name="" placeholder="搜索商品">
+			<input type="button" class="input_btn fr" name="" value="搜索">
+		</div>
+		<div class="guest_cart fr">
+			<a href="cart.html" class="cart_name fl">我的购物车</a>
+			<div class="goods_count fl" id="show_count">1</div>
+		</div>
+	</div>
+
+	<div class="navbar_con">
+		<div class="navbar clearfix">
+			<div class="subnav_con fl">
+				<h1>全部商品分类</h1>	
+				<span></span>			
+				<ul class="subnav">
+					<li><a href="#model01" class="">耐克Nike </a></li>
+					<li><a href="#model02" class="">阿迪达斯Adidas </a></li>
+					<li><a href="#model03" class="">李宁Lining </a></li>
+					<li><a href="#model04" class="">安踏Anta </a></li>
+					<li><a href="#model05" class="">彪马Puma</a></li>
+					<li><a href="#model06" class=""> 匡威Converse </a></li>
+					
+				</ul>
+			</div>
+			<ul class="navlist fl">
+				<li><a href="index.html">首页</a></li>
+				<li class="interval">|</li>
+				<li><a href="">名牌鞋网站</a></li>
+				<li class="interval">|</li>
+				<li><a href="">抽奖</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="breadcrumb">
+		<a href="javascript:void(0)">全部分类</a>
+		<span>></span>
+		<a href="javascript:void(0)"  id="type_name">新鲜水果</a>
+	</div>
+
+	<div class="main_wrap clearfix">
+		<div class="l_wrap fl clearfix">
+			<div class="new_goods">
+				<h3>新品推荐</h3>
+				<ul>
+					<li>
+						<a href="#"><img src="images/goods/adv01.jpg"></a>
+						<h4><a href="#">进口球鞋</a></h4>
+						<div class="prize">￥1299</div>
+					</li>
+					<li>
+						<a href="#"><img src="images/goods/adv02.jpg"></a>
+						<h4><a href="#">时尚潮牌</a></h4>
+						<div class="prize">￥2599</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="r_wrap fr clearfix">
+			<div class="sort_bar">
+				<a href="#" class="active">默认</a>
+				<a href="#">价格</a>
+				<a href="#">人气</a>
+			</div>
+
+			<ul class="goods_type_list clearfix" id="goods_type_list">
+			
+				<li>
+					<a href="detail.html"><img src="images/goods/goods003.jpg"></a>
+					<h4><a href="detail.html">大兴大棚草莓</a></h4>
+					<div class="operate">
+						<span class="prize">￥16.80</span>
+						<span class="unit">16.80/500g</span>
+						<a href="#" class="add_goods" title="加入购物车"></a>
+					</div>
+				</li>
+
+				<li>
+					<a href="#"><img src="images/goods/goods004.jpg"></a>
+					<h4><a href="#">吐鲁番梨光杏</a></h4>
+					<div class="operate">
+						<span class="prize">￥5.50</span>
+						<span class="unit">5.50/500g</span>
+						<a href="#" class="add_goods" title="加入购物车"></a>
+					</div>
+				</li>
+
+				<li>
+					<a href="#"><img src="images/goods/goods005.jpg"></a>
+					<h4><a href="#">黄肉桃</a></h4>
+					<div class="operate">
+						<span class="prize">￥10.00</span>
+						<span class="unit">10.00/500g</span>
+						<a href="#" class="add_goods" title="加入购物车"></a>
+					</div>
+				</li>
+
+				<li>
+					<a href="#"><img src="images/goods/goods006.jpg"></a>
+					<h4><a href="#">进口西梅</a></h4>
+					<div class="operate">
+						<span class="prize">￥28.80</span>
+						<span class="unit">28.8/500g</span>
+						<a href="#" class="add_goods" title="加入购物车"></a>
+					</div>
+				</li>
+
+				<li>
+					<a href="#"><img src="images/goods/goods007.jpg"></a>
+					<h4><a href="#">香梨</a></h4>
+					<div class="operate">
+						<span class="prize">￥6.45</span>
+						<span class="unit">6.45/500g</span>
+						<a href="#" class="add_goods" title="加入购物车"></a>
+					</div>
+				</li>
+<!--  
+				<li>
+					<a href="#"><img src="images/goods/goods008.jpg"></a>
+					<h4><a href="#">栗子</a></h4>
+					<div class="operate">
+						<span class="prize">￥9.50</span>
+						<span class="unit">9.50/500g</span>
+						<a href="#" class="add_goods" title="加入购物车"></a>
+					</div>
+				</li>
+
+				<li>
+					<a href="#"><img src="images/goods/goods009.jpg"></a>
+					<h4><a href="#">海南香蕉</a></h4>
+					<div class="operate">
+						<span class="prize">￥3.30</span>
+						<span class="unit">3.30/500g</span>
+						<a href="#" class="add_goods" title="加入购物车"></a>
+					</div>
+				</li>
+
+				<li>
+					<a href="#"><img src="images/goods/goods010.jpg"></a>
+					<h4><a href="#">青苹果</a></h4>
+					<div class="operate">
+						<span class="prize">￥5.00</span>
+						<span class="unit">5.00/500g</span>
+						<a href="#" class="add_goods" title="加入购物车"></a>
+					</div>
+				</li>
+
+				<li>
+					<a href="#"><img src="images/goods/goods011.jpg"></a>
+					<h4><a href="#">山莓</a></h4>
+					<div class="operate">
+						<span class="prize">￥28.80</span>
+						<span class="unit">28.8/500g</span>
+						<a href="#" class="add_goods" title="加入购物车"></a>
+					</div>
+				</li>
+
+				<li>
+					<a href="#"><img src="images/goods/goods012.jpg"></a>
+					<h4><a href="#">奇异果</a></h4>
+					<div class="operate">
+						<span class="prize">￥25.80</span>
+						<span class="unit">25.8/500g</span>
+						<a href="#" class="add_goods" title="加入购物车"></a>
+					</div>
+				</li>
+				<li>
+					<a href="#"><img src="images/goods/goods013.jpg"></a>
+					<h4><a href="#">蜜桔</a></h4>
+					<div class="operate">
+						<span class="prize">￥4.80</span>
+						<span class="unit">4.8/500g</span>
+						<a href="#" class="add_goods" title="加入购物车"></a>
+					</div>
+				</li>
+				<li>
+					<a href="#"><img src="images/goods/goods014.jpg"></a>
+					<h4><a href="#">脐橙</a></h4>
+					<div class="operate">
+						<span class="prize">￥3.50</span>
+						<span class="unit">3.50/500g</span>
+						<a href="#" class="add_goods" title="加入购物车"></a>
+					</div>
+				</li>
+				<li>
+					<a href="#"><img src="images/goods/goods001.jpg"></a>
+					<h4><a href="#">进口柠檬</a></h4>
+					<div class="operate">
+						<span class="prize">￥3.90</span>
+						<span class="unit">3.90/500g</span>
+						<a href="#" class="add_goods" title="加入购物车"></a>
+					</div>
+				</li>
+				<li>
+					<a href="#"><img src="images/goods/goods002.jpg"></a>
+					<h4><a href="#">玫瑰香葡萄</a></h4>
+					<div class="operate">
+						<span class="prize">￥16.80</span>
+						<span class="unit">16.80/500g</span>
+						<a href="#" class="add_goods" title="加入购物车"></a>
+					</div>
+				</li>
+-->				
+			</ul>
+
+			<div class="pagenation" id="pagenation_info">
+			
+				<a href="#">上一页</a></li>
+				<a href="#" class="active">1</a></li>
+				<a href="#">2</a>
+				<a href="#">3</a>
+				<a href="#">4</a>
+				<a href="#">5</a>
+				<a href="#">下一页></a>
+			 
+			</div>
+			<!-- 
+			<li><a href="#">上一页</a></li>
+				<li><a href="#" class="active">1</a></li>
+				<li><a href="#">2</a></li>
+				<li><a href="#">3</a></li>
+				<li><a href="#">4</a></li>
+				<li><a href="#">5</a></li>
+				<li><a href="#">下一页></a></li>
+			 -->
+			
+		</div>
+	</div>
+
+	<div class="footer">
+		<div class="foot_link">
+			<a href="#">关于我们</a>
+			<span>|</span>
+			<a href="#">联系我们</a>
+			<span>|</span>
+			<a href="#">招聘人才</a>
+			<span>|</span>
+			<a href="#">友情链接</a>		
+		</div>
+		<p>CopyRight © 2019 计算机科学与技术学院欢迎你 All Rights Reserved</p>
+		<p>电话：010-****888    京ICP备*******8号</p>
+	</div>
+	
+	
+<!--
+<script type="text/javascript" src="js/jquery-1.12.4.min.js"></script>
+  
+<script type="text/javascript">
+$(function(){
+	$.post('../goods/GoodsFinds',null,function(data){
+		console.log(data);
+		showFinds(data);
+	},'json');
+	
+});
+
+function showFinds(arr){
+	var str='';
+	for(var i=0;i<arr.length;i++){
+		str+='<li><a href="detail.html"><img src="../../'+arr[i].pics+'"></a>'
+			+'<h4><a href="detail.html">'+arr[i].unit+'</a></h4>'
+			+'<div class="operate"><span class="prize">￥'+arr[i].price+'</span>'
+			+'<span class="unit">'+arr[i].price+'/'+arr[i].weight+'</span><a href="#" class="add_goods" title="加入购物车"></a>'
+			+'</div></li>';
+	}
+	$('#goods_type_list').html(str);
+}
+
+-->
+
+
+</script>
+	
+</body>
+</html>

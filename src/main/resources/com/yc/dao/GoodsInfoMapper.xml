@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--  对应接口的全路径 -->
+<mapper namespace="com.yc.dao.IGoodsInfoMapper">
+<!-- 添加商品信息 -->
+	<insert id="add" parameterType="GoodsInfo">
+		insert into goodsInfo values(null, #{gname}, #{tno}, #{price}, #{intro}, #{balance}, #{pics}, #{unit}, #{qperied}, #{weight}, #{descr})
+	</insert>
+	<!-- 根据商品编号查看商品信息 -->
+	<select id="findByGno" parameterType="int" resultType="GoodsInfo">
+		select gno, gname, gf.tno, price, intro, balance, pics, unit, qperied, weight, descr, tname from goodsInfo gf inner
+		 join  goodsType gt on  gf.tno = gt.tno where gno=#{_parameter} 
+	</select>
+	
+	<!-- 根据商品类型 查看   分页查看   -->
+	<select id="findByType" parameterType="map" resultType="GoodsInfo">
+		select gno, gname, price, unit, weight, pics from goodsInfo where tno=#{tno} order by gno desc limit #{page}, #{rows}
+	</select>
+	
+	
+	<!-- 查询每种类型的商品的前3条数据 -->
+	<select id="finds" resultType="GoodsInfo">
+		select gno,gname,pics,price,tno,unit,weight from goodsInfo gf1 where 3 > (select count(gno) from goodsInfo gf2 where gf1.tno=gf2.tno and gf2.gno>gf1.gno) 
+		order by gf1.tno asc,gf1.gno asc
+	</select>
+	
+	
+	<select id="getTotal" resultType="int" parameterType="String">
+		select count(gno) from goodsInfo
+		<where>
+			<if test="_parameter != null and _parameter!=''">
+				tno = #{_parameter}
+			</if>
+		</where>
+	</select>
+	
+	<update id="updateStore">
+		<!-- 默认情况下是不支持多条sql语句的，所以必须在url上面加上&allowMultiQueries=true -->
+		<foreach collection="array" open="" separator="" close="" item="item">
+			update goodsInfo set balance=balance-(select num from cartInfo where cno=#{item}) where gno = (select gno from cartInfo where cno=#{item});
+		</foreach>
+	</update>
+	
+	<!--public List<GoodsInfo> findAll();-->
+	<select id="findAll" resultType="GoodsInfo">
+		select gno, gname, gf.tno, price, intro, balance, pics, unit, qperied, weight, descr, tname from goodsInfo gf inner
+		 join  goodsType gt on  gf.tno = gt.tno
+	</select>
+	
+	<!--  
+	<update id="updateStore" >
+        update goodsInfo set
+        <trim prefix=" balance = balance - case" suffix="end">
+            <foreach collection="array" item="item">
+				when gno = (select gno from cartinfo where cno = #{item}) then (select num from cartinfo where cno = #{item})
+            </foreach>
+        </trim>
+        <where>
+            gno in (select gno from cartinfo where cno in
+            <foreach collection="array" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+            )
+        </where>
+    </update>-->
+</mapper>

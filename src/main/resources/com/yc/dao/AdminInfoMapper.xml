@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--  对应接口的全路径 -->
+<mapper namespace="com.yc.dao.IAdminInfoMapper">
+	<!-- id值必须跟这个接口里面的方法名一致 -->
+	<insert id="add" parameterType="AdminInfo">
+		insert into admininfo values(null, #{aname}, md5(#{pwd}), #{tel})
+	</insert>
+	<!-- 根据用户名或手机号码登录    -->
+	<select id="login" parameterType="AdminInfo" resultType="AdminInfo">
+		select aid, aname, pwd, tel from admininfo where (aname=#{aname} or tel = #{aname}) and pwd = md5(#{pwd})
+	</select>
+
+	<select id="findAll" resultType="AdminInfo">
+		select aid, aname, pwd, tel from admininfo order by aid;
+	</select>
+	<!-- 重置密码     手机号码的后六位  -->
+	<update id="updatPwd" parameterType="int">
+		update admininfo set pwd = md5(right(tel, 6)) where aid = #{_parameter}
+	</update>
+</mapper>
